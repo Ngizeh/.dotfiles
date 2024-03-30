@@ -1,0 +1,11 @@
+{
+    "elixir.pathToElixirLS": "~/.elixir-ls/release/language_server.sh",
+    "javascript.preferences.quoteStyle": "single",
+    "typescript.preferences.quoteStyle": "single",
+    "[php]": {
+        "coc.preferences.formatOnSave": true
+    },
+    "php-cs-fixer.activateTool": "pint",
+    "javascript.suggest.autoImports": true,
+    "typescript.suggest.autoImports": true
+}
