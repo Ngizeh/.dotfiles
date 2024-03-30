@@ -97,7 +97,24 @@ nmap <C-L> <C-W><C-L>
 
 "-------------Awesome color scheme--------"
 set background=dark
-colorscheme iceberg
+"colorscheme iceberg
+colorscheme hybrid_reverse
+"colorscheme hybrid_material
+"colorscheme tender
+
+function! IsHexColorLight(color) abort
+  let l:raw_color = trim(a:color, '#')
+
+  let l:red = str2nr(substitute(l:raw_color, '(.{2}).{4}', '1', 'g'), 16)
+  let l:green = str2nr(substitute(l:raw_color, '.{2}(.{2}).{2}', '1', 'g'), 16)
+  let l:blue = str2nr(substitute(l:raw_color, '.{4}(.{2})', '1', 'g'), 16)
+
+  let l:brightness = ((l:red * 299) + (l:green * 587) + (l:blue * 114)) / 1000
+
+  return l:brightness > 155
+endfunction
+
+
 
 "-------------Awesome light color scheme--------"
 "set background=light
@@ -209,6 +226,28 @@ let g:coc_global_extensions = ['coc-elixir', 'coc-solargraph', 'coc-rls', 'coc-t
 " Automatically format Elixir, Rust and Typescript files on save
 "let g:coc_user_config = {"coc.preferences.formatOnSaveFiletypes": ["php", "elixir", "rust", "typescript", "javascript"]}
 let g:coc_user_config = {"coc.preferences.formatOnSaveFiletypes": ["*"]}
+
+
+if has('nvim-0.4.0') || has('patch-8.2.0750')
+  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+  inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+  inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+endif
+
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call ShowDocumentation()<CR>
+
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
 
 "------------Search---------------"
 set incsearch
