@@ -22,6 +22,7 @@ set number relativenumber
 set clipboard=unnamedplus
 set nocompatible
 set smartindent
+set linespace=15
 
 set tags+=tags,tags.vendors
 
@@ -151,6 +152,9 @@ let g:NERDTreeWinSize=50
 "Make NERDTree easier to toggle.
 nmap <M-b> :NERDTreeToggle<CR>
 
+"---------ignore files in nerd tree-------------"
+let NERDTreeIgnore=['\.DS_Store$', '\.git$', '\.idea$', '\.phpintel', '\.elixir_ls', '_build', '\.angular', '\.vscode', '\.elixir-tools']
+
 nmap <C-R> :CtrlPBufTag<CR>
 nmap <D-e> :CtrlPMRUFiles<CR>
 
@@ -228,6 +232,7 @@ let g:coc_global_extensions = ['coc-elixir', 'coc-solargraph', 'coc-rls', 'coc-t
 let g:coc_user_config = {"coc.preferences.formatOnSaveFiletypes": ["*"]}
 
 
+"Scroll the Popup documentation in Coc"
 if has('nvim-0.4.0') || has('patch-8.2.0750')
   nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
   nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
@@ -258,9 +263,8 @@ au BufRead,BufNewFile *.eex,*.heex,*.leex,*.sface,*.lexs set filetype=eelixir
 au BufRead,BufNewFile mix.lock set filetype=elixir
 
 
-""autocmd FileType javascript autocmd BufWritePost <buffer> call JsBeautify()
-
-
+"-------------NERDTree Allows Open --------------"
+autocmd VimEnter * NERDTree
 
 "-------------Auto-Commands--------------"
 "Automatically source the Vimrc file on save.
@@ -280,3 +284,10 @@ autocmd FileType php noremap <Leader>n :call PhpInsertUse()<CR>
 
 "-------------Auto Import with Enter Key in Coc--------------"
 inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
+
+
+" Coc --- GoTo code navigation
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
