@@ -1,7 +1,6 @@
 syntax on
 so ~/.vim/plugins.vim
 
-
 set showmode                    " always show what mode we're currently editing in
 set nowrap                      " don't wrap lines
 set tabstop=4                   " a tab is four spaces
@@ -22,16 +21,19 @@ set number relativenumber
 set clipboard=unnamedplus
 set nocompatible
 set smartindent
-set linespace=15
-
+set linespace=20
+set ignorecase smartcase
 set tags+=tags,tags.vendors
+set splitbelow	                 "Make splits default to below...
+set splitright	                  "And to the right. This feels more natural.
+set termguicolors
+
 
 execute "set <M-b>=\eb"
 execute "set <M-q>=^[q"
 
-"-------------Split Management--------------"
-set splitbelow	"Make splits default to below...
-set splitright	"And to the right. This feels more natural.
+autocmd FileType javascript set shiftwidth=4 tabstop=4 softtabstop=4
+
 
 
 
@@ -64,12 +66,52 @@ inoremap  ' ''<Left>
 inoremap  ` ``<Left>
 
 
-"-----This runs the full PHPUnit suite-------"
-"nnoremap ,t :!phpunit<cr>
+
+"-----This runs the full Test suite-------"
+nmap <silent> <Leader>tn :TestNearest<CR>
+nmap <silent> <Leader>tf :TestFile<CR>
+nmap <silent> <Leader>ts :TestSuite<CR>
+nmap <silent> <Leader>tl :TestLast<CR>
+nmap <silent> <Leader>tg :TestVisit<CR>
+nmap <silent> <Leader>tt :FloatermToggle<CR>
 
 
-"----This runs the test method under the cursor------"
-"nmap ,tm ?functionwviwy:!phpunit --filter <c-r>"<CR>
+ function! PhpUnitTransform(cmd) abort
+     return join(map(split(a:cmd), 'v:val == "--colors" ? "--colors=always" : v:val'))
+ endfunction
+
+ let g:test#custom_transformations = {'phpunit': function('PhpUnitTransform')}
+ let g:test#transformation = 'phpunit'
+
+ " let test#php#phpunit#options = '--colors=always'
+ let test#php#pest#options = '-v'
+ let test#javascript#jest#options = '--color'
+
+function! FloatermStrategy(cmd)
+    execute 'silent FloatermKill'
+    execute 'FloatermNew! '.a:cmd.' | less -X'
+endfunction
+
+let test#custom_strategies = {'floaterm' : function('FloatermStrategy')}
+let test#strategy = "floaterm"
+
+
+" Customize fzf colors to match your color scheme
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Search'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Visual'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'StatusLineNC'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
+
 
 "--------Insert Mode cursor movementa--------"
 inoremap <C-h> <Left>
@@ -88,20 +130,6 @@ nmap <C-H> <C-W><C-H>
 nmap <C-L> <C-W><C-L>
 
 
-"-------------Palenight color scheme--------"
-"set background=light
-"colorscheme palenight
-
-"-------------palenight color scheme--------"
-"set background=dark
-"colorscheme oceanic_material
-
-"-------------Awesome color scheme--------"
-set background=dark
-"colorscheme iceberg
-colorscheme hybrid_reverse
-"colorscheme hybrid_material
-"colorscheme tender
 
 function! IsHexColorLight(color) abort
   let l:raw_color = trim(a:color, '#')
@@ -116,35 +144,41 @@ function! IsHexColorLight(color) abort
 endfunction
 
 
+"-------------Visuals---------------------------"
 
 "-------------Awesome light color scheme--------"
 "set background=light
 "colorscheme iceberg
-
-"-------------Awesome light color scheme--------"
-"set background=light
 "colorscheme lucius
 
+"-------------Awesome dark color scheme--------"
+set background=dark
+"colorscheme hybrid_reverse
 
-"-------------Gruvbox color scheme--------"
+"-------------Palenight light color scheme--------"
 "set background=light
-"let g:gruvbox_material_better_performance = 1
-"colorscheme gruvbox-material
+"colorscheme palenight
 
-"-------------Visuals-------------"
+"-------------Best Choice dark color scheme--------"
+"set background=dark
+colorscheme oceanic_material
+
+
+
 "set t_co=256
 "colorscheme atom-dark-256
 
 
-"-------------Carbono color scheme--------"
+"-------------Carbon color scheme--------"
 "colorscheme carbon
-"highlight LineNr guifg=#00af87          "Dark Green Color"
-highlight LineNr guifg=#af87af          "Dark Grey Color"
 
+
+"highlight LineNr fg=#00af87          "Dark Green Color
+"highlight LineNr fg=#af87af          "Dark Grey Color"
 
 "-------------NERDTree Settings--------"
 let NERDTreeShowHidden=1
-let g:NERDTreeWinSize=50
+let g:NERDTreeWinSize=40
 
 
 
@@ -167,10 +201,10 @@ inoremap <C-D> <Esc> Ypi
 
 
 "-------------Copy paste to clipboard--------------"
-noremap <Leader>y "*y
-noremap <Leader>p "*p
-noremap <Leader>Y "+y
-noremap <Leader>P "+p
+vnoremap <Leader>y "*y
+vnoremap <Leader>p "*p
+vnoremap <Leader>y "+Y
+vnoremap <Leader>p "+P
 
 
 
@@ -193,8 +227,8 @@ let g:snipMate.scope_aliases = {}
 let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
 let g:SuperTabDefaultCompletionType = '<C-n>'
-let g:indentguides_spacechar = '┆'
-let g:indentguides_tabchar = '|'
+let g:indentdes_spacechar = '┆'
+let g:indentdes_tabchar = '|'
 
 
 
@@ -222,6 +256,8 @@ call plug#begin()
     Plug 'marlonfan/coc-phpls'
     Plug 'prabirshrestha/vim-lsp'
     Plug 'dense-analysis/ale'
+    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+    Plug 'junegunn/fzf.vim'
 call plug#end()
 
 " Install Coc extensions for Elixir, Ruby, Rust, Typescript and VimL
@@ -263,9 +299,6 @@ au BufRead,BufNewFile *.eex,*.heex,*.leex,*.sface,*.lexs set filetype=eelixir
 au BufRead,BufNewFile mix.lock set filetype=elixir
 
 
-"-------------NERDTree Allows Open --------------"
-autocmd VimEnter * NERDTree
-
 "-------------Auto-Commands--------------"
 "Automatically source the Vimrc file on save.
 augroup autosourcing
@@ -291,3 +324,4 @@ nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+
